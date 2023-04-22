@@ -44,6 +44,12 @@ Go in the folder fuelPricesFrance/frontend/ :
 cd fuelPricesFrance/frontend/
 ```
 
+Install :
+
+```bash
+npm install
+```
+
 Run : 
 
 ```bash

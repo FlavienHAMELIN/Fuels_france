@@ -1,5 +1,15 @@
   <template>
     <div id="fuels">
+      <label for="fuelName-select">Choisissez un carburant :</label>
+      <select id="fuelName-select" name="fuelsNames" @change="$eventName => onChangeName($eventName)" class="form-control">
+        <option value="">Carburant</option>
+        <option value="Gazole">Gazole</option>
+        <option value="SP98">SP98</option>
+        <option value="SP95">SP95</option>
+        <option value="E10">E10</option>
+        <option value="GPLc">GPLc</option>
+        <option value="E85">E85</option>
+      </select>
       <label for="region-select">Choisissez une région :</label>
       <select id="region-select" name="region" @change="$eventRegion => onChangeRegion($eventRegion)" class="form-control">
         <option value="">Localisation</option>
@@ -18,16 +28,11 @@
         <option value="Pays de la Loire">Pays de la Loire</option>
         <option value="Provence-Alpes-Côte d'Azur">Provence-Alpes-Côte d'Azur</option>
       </select>
-      <label for="fuelName-select">Choisissez un carburant :</label>
-      <select id="fuelName-select" name="fuelsNames" @change="$eventName => onChangeName($eventName)" class="form-control">
-        <option value="">Carburant</option>
-        <option value="Gazole">Gazole</option>
-        <option value="SP98">SP98</option>
-        <option value="SP95">SP95</option>
-        <option value="E10">E10</option>
-        <option value="GPLc">GPLc</option>
-        <option value="E85">E85</option>
-      </select>
+      <label for="departement-select">Ou choisissez un numéro de département : </label>
+      <input id="departement-select" type="text" v-model="input" placeholder="28" @change="$eventDepartement => onChangeDepartement($eventDepartement)" class="input" />
+      <div id="average-price" class="average-price-display">
+        {{ this.averagePrice }}
+      </div>
       <l-map :center="center" :zoom="zoom" class="map" ref="map" @update:center="centerUpdated">
         <l-tile-layer :url="url"></l-tile-layer>
         <outlet v-for="marker in this.markers" :key="marker.id" :marker="marker"></outlet>
@@ -40,7 +45,7 @@
   import outlet from './OutletsMarkers';
   import 'leaflet/dist/leaflet.css';
   import axios from 'axios';
-  import { quantileSeq } from 'mathjs';
+  import { mean, round, quantileSeq } from 'mathjs';
 
   export default {
     components: {
@@ -59,29 +64,36 @@
       };
     },
     methods: {
-      async updateData(fuel, region) {
+      async updateData(fuel, region, departement) {
         let response = null;
-        if (region != "Toute la France") {
+        if (region !== undefined && region != "Toute la France") {
           response = await axios.get(`http://localhost:8181/fuelsFrance?name=${fuel}&region=${region}`);
-          this.localisationUpdated(response);
-          this.markersUpdated(response);
-        } else if (region == "Toute la France"){
+        } else if (region !== undefined && region == "Toute la France") {
           response = await axios.get(`http://localhost:8181/fuelsFrance?name=${fuel}`);
-          this.localisationUpdated(response);
-          this.markersUpdated(response);
         }
+        if (departement !== undefined) {
+          response = await axios.get(`http://localhost:8181/fuelsFrance?name=${fuel}&dep_code=${departement}`);
+        }
+        this.localisationUpdated(response);
+        this.markersUpdated(response);
         
       },
       onChangeRegion(eventRegion) {
         this.region = eventRegion.target.value;
         if (this.fuelName !== undefined && this.region !== undefined && this.fuelName != "" && this.region != "") {
-          this.updateData(this.fuelName, this.region);
+          this.updateData(this.fuelName, this.region, undefined);
         }
       },
       onChangeName (eventName) {
         this.fuelName = eventName.target.value;
-        if (this.fuelName !== undefined && this.region !== undefined && this.fuelName != "" && this.region != "") {
-          this.updateData(this.fuelName, this.region);
+        if (this.fuelName !== undefined && this.fuelName != "") {
+          this.updateData(this.fuelName, this.region, this.departement);
+        }
+      },
+      onChangeDepartement (eventDepartement) {
+        this.departement = eventDepartement.target.value;
+        if (this.fuelName !== undefined && this.departement !== undefined && this.fuelName != "" && this.departement != "") {
+          this.updateData(this.fuelName, undefined, this.departement)
         }
       },
       centerUpdated (center) {
@@ -95,6 +107,7 @@
         for (let i = 0; i < data.length; i++) {
           arrPrices.push(data[i]["price"]);
         }
+        this.averagePrice = "Prix moyen : " + String(round(mean(arrPrices), 3)) + " €";
         arrPrices.sort();
         const quartiles = quantileSeq(arrPrices, [0.25, 0.50, 0.75]);
 
@@ -106,7 +119,7 @@
                   id: i, 
                   imageUrl: 'station-vert.png', 
                   coordinates: [data[i]["latitude"], data[i]["longitude"]],
-                  content: `${data[i]["name"]} : ${price} €`,
+                  content: `${data[i]["name"]} : ${price} € | Adresse : ${data[i]["address"]}, ${data[i]["city"]} |`,
               }
             )
           }
@@ -116,7 +129,7 @@
                   id: i, 
                   imageUrl: 'station-jaune.png', 
                   coordinates: [data[i]["latitude"], data[i]["longitude"]],
-                  content: `${data[i]["name"]} : ${price} €`,
+                  content: `${data[i]["name"]} : ${price} € | Adresse : ${data[i]["address"]}, ${data[i]["city"]} |`,
               }
             )
           }
@@ -126,7 +139,7 @@
                   id: i, 
                   imageUrl: 'station-orange.png', 
                   coordinates: [data[i]["latitude"], data[i]["longitude"]],
-                  content: `${data[i]["name"]} : ${price} €`,
+                  content: `${data[i]["name"]} : ${price} € | Adresse : ${data[i]["address"]}, ${data[i]["city"]} |`,
               }
             )
           }
@@ -136,7 +149,7 @@
                   id: i, 
                   imageUrl: 'station-rouge.png', 
                   coordinates: [data[i]["latitude"], data[i]["longitude"]],
-                  content: `${data[i]["name"]} : ${price} €`,
+                  content: `${data[i]["name"]} : ${price} € | Adresse : ${data[i]["address"]}, ${data[i]["city"]} |`,
               }
             )
           }
@@ -172,6 +185,16 @@
     }
 
     .form-control {
+      padding: 0.5em;
+      margin: 0.5em;
+    }
+
+    .input {
+      padding: 0.5em;
+      margin: 0.5em;
+    }
+
+    .average-price-display {
       padding: 0.5em;
       margin: 0.5em;
     }
