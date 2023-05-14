@@ -1,6 +1,6 @@
-# fuelsPricesFrance
+# Fuels_france
 
-fuelsPricesFrance allows you to observe the price of fuel on the French territory
+Fuels_france allows you to observe the price of fuel on the French territory
 
 ## Installation
 
