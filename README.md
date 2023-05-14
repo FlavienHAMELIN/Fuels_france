@@ -4,20 +4,22 @@ Fuels_france allows you to observe the price of fuel on the French territory
 
 ## Installation
 
-Install [Docker](https://www.docker.com/).
+Install Docker.
 
-Install [npm](https://www.npmjs.com/).
+Install docker-compose.
 
-Install [Vue.js](https://vuejs.org/) with npm.
+Install npm.
 
-Install [Go](https://go.dev/).
+Install Vue.js with npm.
+
+Install Go.
 
 Start Docker.
 
-Go in the folder fuelPricesFrance/misc/ :
+Go in the folder Fuels_france/misc/ :
 
 ```bash
-cd fuelPricesFrance/misc/
+cd Fuels_france/misc/
 ```
 
 Start the database :
@@ -26,10 +28,10 @@ Start the database :
 docker-compose up -d
 ```
 
-Go in the folder fuelPricesFrance/ :
+Go in the folder Fuels_france/ :
 
 ```bash
-cd fuelPricesFrance/
+cd Fuels_france/
 ```
 
 Run the server :
@@ -41,7 +43,7 @@ go run main/server.go
 Go in the folder fuelPricesFrance/frontend/ :
 
 ```bash
-cd fuelPricesFrance/frontend/
+cd Fuels_france/frontend/
 ```
 
 Install :
