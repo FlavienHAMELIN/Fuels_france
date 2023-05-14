@@ -4,13 +4,15 @@ Fuels_france allows you to observe the price of fuel on the French territory
 
 ## Installation
 
-Install [Docker](https://www.docker.com/).
+Install Docker.
 
-Install [npm](https://www.npmjs.com/).
+Install docker-compose.
 
-Install [Vue.js](https://vuejs.org/) with npm.
+Install npm.
 
-Install [Go](https://go.dev/).
+Install Vue.js with npm.
+
+Install Go.
 
 Start Docker.
 
