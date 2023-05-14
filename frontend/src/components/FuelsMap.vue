@@ -58,7 +58,6 @@
     data () {
       return {
         url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-        center: [48.866667, 2.333333],
         zoom: 8,
         markers: [],
       };
