@@ -1,0 +1,49 @@
+version: '3.3'
+services:
+
+  db:
+    network_mode: host
+    image: postgres
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    volumes:
+      - local_pgdata:/var/lib/postgresql/data
+
+  pgadmin:
+    network_mode: host
+    image: dpage/pgadmin4
+    container_name: pgadmin4_container
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+
+  backend:
+    network_mode: host
+    build: 
+        dockerfile: ./backend/Dockerfile
+        context: .
+    container_name: backend
+    restart: always
+    depends_on:
+      - db
+
+  frontend:
+    network_mode: host
+    build: 
+      dockerfile: ./frontend/Dockerfile
+      context: .
+    container_name: frontend
+    restart: always
+    depends_on:
+      - backend
+
+volumes: 
+  local_pgdata:
+  pgadmin-data:
+
