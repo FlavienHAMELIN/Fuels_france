@@ -1,0 +1,11 @@
+database:
+  host: 127.0.0.1
+  # port: 5432 # This must be a default value
+  db: postgres
+  user: user
+  password : password
+
+openapi:
+  url : "https://www.data.gouv.fr/fr/datasets/r/b3393fc7-1bee-42fb-a351-d7aedf5d5ff0"
+
+  
