@@ -17,37 +17,32 @@ type APIFuel struct {
 }
 
 type Fuels []struct {
-	Datasetid string `json:"datasetid"`
-	Recordid  string `json:"recordid"`
-	Fields    struct {
-		Geom                 []float64 `json:"geom"`
-		RegName              string    `json:"reg_name"`
-		PrixValeur           float64   `json:"prix_valeur"`
-		ComCode              string    `json:"com_code"`
-		DepName              string    `json:"dep_name"`
-		Horaires             string    `json:"horaires"`
-		Adresse              string    `json:"adresse"`
-		PrixNom              string    `json:"prix_nom"`
-		ComName              string    `json:"com_name"`
-		Ville                string    `json:"ville"`
-		ComArmName           string    `json:"com_arm_name"`
-		RegCode              string    `json:"reg_code"`
-		ServicesService      string    `json:"services_service"`
-		DepCode              string    `json:"dep_code"`
-		ComArmCode           string    `json:"com_arm_code"`
-		EpciCode             string    `json:"epci_code"`
-		Cp                   string    `json:"cp"`
-		ID                   string    `json:"id"`
-		PrixID               string    `json:"prix_id"`
-		EpciName             string    `json:"epci_name"`
-		Pop                  string    `json:"pop"`
-		PrixMaj              time.Time `json:"prix_maj"`
-		HorairesAutomate2424 string    `json:"horaires_automate_24_24"`
-	} `json:"fields"`
-	Geometry struct {
-		Type        string    `json:"type"`
-		Coordinates []float64 `json:"coordinates"`
-	} `json:"geometry"`
+	ID       string `json:"id"`
+	Cp       string `json:"cp"`
+	Pop      string `json:"pop"`
+	Adresse  string `json:"adresse"`
+	Ville    string `json:"ville"`
+	Horaires string `json:"horaires"`
+	Geom     struct {
+		Lon float64 `json:"lon"`
+		Lat float64 `json:"lat"`
+	} `json:"geom"`
+	PrixMaj              time.Time `json:"prix_maj"`
+	PrixID               string    `json:"prix_id"`
+	PrixValeur           float64   `json:"prix_valeur"`
+	PrixNom              string    `json:"prix_nom"`
+	ComArmCode           string    `json:"com_arm_code"`
+	ComArmName           string    `json:"com_arm_name"`
+	EpciCode             string    `json:"epci_code"`
+	EpciName             string    `json:"epci_name"`
+	DepCode              string    `json:"dep_code"`
+	DepName              string    `json:"dep_name"`
+	RegCode              string    `json:"reg_code"`
+	RegName              string    `json:"reg_name"`
+	ComCode              string    `json:"com_code"`
+	ComName              string    `json:"com_name"`
+	ServicesService      []string  `json:"services_service"`
+	HorairesAutomate2424 string    `json:"horaires_automate_24_24"`
 }
 
 func (a APIFuel) GetFuels(middleware api.Middleware) error {
@@ -72,23 +67,23 @@ func (a APIFuel) GetFuels(middleware api.Middleware) error {
 	today := time.Now()
 	before := today.Add(-72 * time.Hour)
 	for _, item := range responseObject {
-		if item.Fields.PrixValeur != 0 && item.Fields.PrixMaj.After(before) {
+		if item.PrixValeur != 0 && item.PrixMaj.After(before) {
 			fuel := api.FuelMessage{
-				RecordID:        item.Recordid,
-				Region:          item.Fields.RegName,
-				Department:      item.Fields.DepName,
-				DepCode:         item.Fields.DepCode,
-				City:            item.Fields.Ville,
-				ZipCode:         item.Fields.Cp,
-				Address:         item.Fields.Adresse,
-				Name:            item.Fields.PrixNom,
-				Price:           item.Fields.PrixValeur,
-				PriceUpdateTime: item.Fields.PrixMaj,
+				RecordID:        item.ID + item.PrixID,
+				Region:          item.RegName,
+				Department:      item.DepName,
+				DepCode:         item.DepCode,
+				City:            item.Ville,
+				ZipCode:         item.Cp,
+				Address:         item.Adresse,
+				Name:            item.PrixNom,
+				Price:           item.PrixValeur,
+				PriceUpdateTime: item.PrixMaj,
 			}
 
-			if len(item.Fields.Geom) == 2 {
-				fuel.Latitude = item.Fields.Geom[0]
-				fuel.Longitude = item.Fields.Geom[1]
+			if item.Geom.Lat != 0 && item.Geom.Lon != 0 {
+				fuel.Latitude = item.Geom.Lat
+				fuel.Longitude = item.Geom.Lon
 			}
 
 			(*a.middleware).Send(fuel)
