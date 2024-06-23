@@ -6,8 +6,6 @@ Fuels_france allows you to observe the price of fuel on the French territory
 
 Install Docker.
 
-Install docker-compose.
-
 Start Docker.
 
 Go in the folder Fuels_france/ :
@@ -19,7 +17,7 @@ cd Fuels_france/
 Run :
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 You can now use the App :
