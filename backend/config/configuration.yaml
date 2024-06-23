@@ -6,6 +6,6 @@ database:
   password : password
 
 openapi:
-  url : "https://www.data.gouv.fr/fr/datasets/r/b3393fc7-1bee-42fb-a351-d7aedf5d5ff0"
+  url : "https://www.data.gouv.fr/fr/datasets/r/b0561905-7b5e-4f38-be50-df05708acb80"
 
   
